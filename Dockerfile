@@ -1,7 +1,5 @@
 FROM ruby:2.5.3
 
-ENV APP_HOME /aws_demo_app
-
 RUN apt-get update -qq \
   && apt-get install -y \
     libpq-dev \
@@ -14,13 +12,14 @@ RUN apt-get update -qq \
             /var/lib/dpkg \
             /var/lib/cache
 
+ENV APP_HOME /aws_demo_app
+
+ENV BUNDLE_PATH=/box \
+    BUNDLE_BIN=/box/bin \
+    GEM_HOME=/box
+ENV PATH="${BUNDLE_BIN}:${PATH}"
 
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
-ADD Gemfile* $APP_HOME/
-RUN bundle install
-
 ADD . $APP_HOME
-
-CMD bundle exec rails s -p ${PORT} -b '0.0.0.0'

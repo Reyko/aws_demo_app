@@ -1,11 +1,17 @@
-version: '3'
+version: "3"
 services:
   db:
     image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
   web:
     build: .
+    command: ./script/start.sh
     volumes:
       - .:/aws_demo_app
+      - box:/box
     ports:
       - "3000:3000"
     environment:
@@ -15,3 +21,11 @@ services:
       PGDBNAME: "aws_demo_app"
     depends_on:
       - db
+      - box
+  box:
+    image: busybox
+    volumes:
+      - box:/box
+volumes:
+  box:
+  data:
