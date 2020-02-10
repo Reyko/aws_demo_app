@@ -1,17 +1,17 @@
-FROM ruby:2.5.3 AS builder
-ENV APP_HOME /aws_demo_app
+FROM ruby:2.5.3-slim AS builder
+ARG APP_HOME=/aws_demo_app
 RUN apt-get update -qq \
   && apt-get install -y \
     libpq-dev \
     build-essential \
     nodejs
-RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
-ADD Gemfile* $APP_HOME/
+COPY Gemfile* $APP_HOME/
 RUN bundle install
-ADD . $APP_HOME
+COPY . $APP_HOME
 
-FROM ruby:2.5.3
+FROM ruby:2.5.3-slim
+ARG APP_HOME=/aws_demo_app
 RUN apt-get update -qq \
   && apt-get install -y \
     libpq-dev \
@@ -23,7 +23,6 @@ RUN apt-get update -qq \
             /var/lib/log \
             /var/lib/dpkg \
             /var/lib/cache
-RUN mkdir /aws_demo_app
 WORKDIR /aws_demo_app
 COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
 COPY --from=builder /aws_demo_app/ /aws_demo_app/
